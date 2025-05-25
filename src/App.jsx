@@ -1,22 +1,31 @@
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
-function RandomPassword(){
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
-  const length = 12;
-  let password = '';
-  
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    password += characters[randomIndex];
-  }
-  
-  return password;
-}
 
 function App() {
   const [length, setLength] = useState(8)
+  const [numAllowed, setNumAllowed] = useState(0)
   const [text, setText] = useState('')
   const [password, setPassword] = useState('')
+
+
+  const generatePassword = useCallback(() => {
+    let pass = ""
+    let lower = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    if (numAllowed) {
+      lower += "0123456789"
+    }
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * lower.length)
+      pass += lower[randomIndex]
+    }
+     setPassword(pass)
+  }, [length, numAllowed])
+  
+  useEffect(() => {
+    generatePassword()
+  }
+  , [length, numAllowed, generatePassword])
+
   return (
     <>
       <div className="w-full max-w-md mx-auto shadow-md rounded-lg px-4 py-3 my-8 bg-gray-800 text-orange-500">
@@ -45,6 +54,18 @@ function App() {
             id=''
             />
             <label htmlFor="range" className='text-gray-400'>Length: {length}</label>
+            </div>
+        </div>
+        <div className='flex text-sm gap-x-2'>
+          <div className='flex items-center gap-x-1'>
+            <input
+             type="checkbox"
+             name=''
+             id=""
+             defaultChecked={numAllowed}
+             onChange={(e) => setNumAllowed(e.target.checked)}
+             />
+            <label htmlFor="" className='text-gray-400'>Allow Numbers</label>
             </div>
         </div>
     </div>
