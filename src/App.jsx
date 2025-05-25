@@ -4,27 +4,29 @@ import { useState, useCallback, useEffect } from 'react'
 function App() {
   const [length, setLength] = useState(8)
   const [numAllowed, setNumAllowed] = useState(0)
-  const [text, setText] = useState('')
+  const [charAllowed, setCharAllowed] = useState(0)
   const [password, setPassword] = useState('')
-
 
   const generatePassword = useCallback(() => {
     let pass = ""
     let lower = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    if (numAllowed) {
-      lower += "0123456789"
-    }
+    if (numAllowed) lower += "0123456789"
+    if (charAllowed) lower += "!@#$%^&*()_+[]{}|;:,.<>?/~`-="
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * lower.length)
       pass += lower[randomIndex]
     }
      setPassword(pass)
-  }, [length, numAllowed])
+  }, [length, numAllowed, charAllowed]) 
   
   useEffect(() => {
     generatePassword()
+  }, [length, numAllowed, charAllowed, generatePassword])
+
+  const copyPasswordToClipboard = () => {
+    window.navigator.clipboard.writeText(password)
+    alert("Password copied to clipboard!")
   }
-  , [length, numAllowed, generatePassword])
 
   return (
     <>
@@ -39,7 +41,7 @@ function App() {
             placeholder="Type something..."
             readOnly
           />
-          <button className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0'>Copy</button>
+          <button onClick={copyPasswordToClipboard} className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0'>Copy</button>
         </div>
         <div className='flex text-sm gap-x-2'>
           <div className='flex items-center gap-x-1'>
@@ -66,7 +68,17 @@ function App() {
              onChange={(e) => setNumAllowed(e.target.checked)}
              />
             <label htmlFor="" className='text-gray-400'>Allow Numbers</label>
-            </div>
+          </div>
+          <div className='flex items-center gap-x-1'>
+            <input
+             type="checkbox"
+             name=''
+             id=""
+             defaultChecked={charAllowed}
+             onChange={(e) => setCharAllowed(e.target.checked)}
+             />
+            <label htmlFor="" className='text-gray-400'>Allow Characters</label>
+          </div>
         </div>
     </div>
     </>
